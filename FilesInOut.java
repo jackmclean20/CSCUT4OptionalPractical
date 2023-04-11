@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 import java.lang.Number;
+import java.io.FileWriter;
 
 /**
  * 
@@ -12,23 +13,77 @@ import java.lang.Number;
  */
 public class FilesInOut {
 
-    public static void main(String[] args) {
-        // Replace this with statements to set the file name (input) and file name (output).
-        // Initially it will be easier to hardcode suitable file names.
+	public static void main(String[] args) {
+		
+		Scanner input = new Scanner(System.in);
+		System.out.print("Enter input file location and name: ");
+		String inputFileName = input.nextLine();
+		System.out.print("Enter output file location and name: ");
+		String outputFileName = input.nextLine();
+		System.out.print("Convert names to uppercase? (Y/N): ");
+		boolean isUpperCase = input.nextLine().equalsIgnoreCase("Y");
 
-        // Set up a new Scanner to read the input file.
-        // Processing line by line would be sensible here.
-        // Initially, echo the text to System.out to check you are reading correctly.
-        // Then add code to modify the text to the output format.
+		File inputFile = new File(inputFileName);
+		Scanner scanner;
+		try {
+			scanner = new Scanner(inputFile);
+		} catch (FileNotFoundException e) {
+			System.out.println("Error: " + e.getMessage());
+			return;
+		}
 
-        // Set up a new PrintWriter to write the output file.
-        // Add suitable code into the above processing (because you need to do this line by line also.
-        // That is, read a line, write a line, loop.
+		File outputFile = new File(outputFileName);
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(outputFile);
+		} catch (FileNotFoundException e) {
+			System.err.println("Error: " + e.getMessage());
+			return;
+		}
 
-        // Finally, add code to read the filenames as arguments from the command line.
+		while (scanner.hasNextLine()) {
+			String line = scanner.nextLine();
 
-        System.out.println("You need to add your own code to do anything");
+			String[] parts = line.split(" ");
+			String firstName = toTitleCase(parts[0]);
+			String middleName = "";
+			String lastName = toTitleCase(parts[parts.length-1]);
+			String dateOfBirth = parts[2];
+			String formattedDate = formatDate(dateOfBirth);
+			
+			if (parts.length == 4) {
+				middleName = middleName(parts[1]);
+			}
+			
+			if (isUpperCase) {
+				firstName = firstName.toUpperCase();
+                lastName = lastName.toUpperCase();
+			}
 
-    } // main
+			writer.printf("%-20s %-20s %s%n", firstName, middleName, lastName, formattedDate);
+		}
+		if (isUpperCase) 
+
+		scanner.close();
+		writer.close();
+		input.close();
+	}
+
+	private static String toTitleCase(String str) {
+		return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+	}
+	
+	private static String middleName(String str) {
+		if (str != null) {
+			return str.toUpperCase();
+		}
+		else {
+			return "";
+		}
+	}
+
+	private static String formatDate(String str) {
+		return str.substring(0, 2) + "/" + str.substring(2, 4) + "/" + str.substring(4);
+	}
 
 } // FilesInOut
